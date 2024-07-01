@@ -4,22 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic HTML Page</title>
+    <script src="app.js"></script>
+    <script lang="javascript" src="xlsx.full.min.js"></script>
+    <script src="DOM_1.js"></script>
+    <script src="DOM_2.js"></script>
+    <link rel="stylesheet" href="landingPage.css" id="DOM_1_CSS" class="alternate" disabled>
+    <link rel="stylesheet" href="testing.css"  id="DOM_2_CSS"  class="alternate" disabled>
+    
 </head>
 <body id="workspace">
-    <div id="abc">abc</div>
-    <script>
-        alert("abc");
-    </script>
-    <script src="script1.js"></script>
-    <script src="script2.js"></script>
-    <script src="script3.js"></script>
 </body>
 </html>
-<script>
-    document.getElementById('workspace').innerHTML = '<div id="greeting"></div>';
-    document.getElementById('greeting').innerHTML = 'greeting';
-    alert("greeting");
-    document.getElementById('workspace').innerHTML = '<div id="info"></div>';
-    document.getElementById('info').innerHTML = 'info';
-    alert("info");
-</script>
+<script>app_init();</script>

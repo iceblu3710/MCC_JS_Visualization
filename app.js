@@ -33,6 +33,7 @@ function DOM_1_Running() { // Landing Page
         await handleXLSX(currentFile);
         displayFileInfo(currentFile);
         populateMenu(panelsData);
+        checkForDuplicates(entriesData);
     }
 
     document.getElementById('load-button').addEventListener('click', loadSelection, false);
@@ -242,15 +243,17 @@ function DOM_2_Running() { // Content display
     }   
 }
 
-function checkForDuplicates(entriesData) {
+function checkForDuplicates(Data) {
     const seenTags = new Set();
     const seenPositions = {};
     const duplicateMessages = [];
 
-    entriesData.forEach(entry => {
+    Data.forEach(entry => {
         // Check for duplicate TAGs
         if (seenTags.has(entry.TAG)) {
-            duplicateMessages.push(`Duplicate TAG: ${entry.TAG}`);
+            if (!entry.TAG === '' || !entry.TAG === 'Spare') {
+                duplicateMessages.push(`Duplicate TAG: ${entry.TAG}`);
+            }
         }
         seenTags.add(entry.TAG);
 
@@ -268,11 +271,7 @@ function checkForDuplicates(entriesData) {
         seenPositions[panelKey].add(positionKey);
     });
 
-    // Display duplicates in alert boxes, 10 at a time
-    for (let i = 0; i < duplicateMessages.length; i += 10) {
-        const messageChunk = duplicateMessages.slice(i, i + 10).join('\n');
-        alert(messageChunk);
-    }
+    console.log(duplicateMessages.join('\n'));
 }
 
 

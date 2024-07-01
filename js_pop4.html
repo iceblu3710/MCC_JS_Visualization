@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to HTML Table</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        .populated-cell {
+            background-color: lightyellow;
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .info-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .info-panel.open {
+            right: 0;
+        }
+    
+        .mcc-table {
+            border: none;
+            border-collapse: collapse;
+            width: 960px;
+        }
+
+        .pnl-table {
+            border: none;
+            border-collapse: collapse;
+            width: 500px;
+        }
+
+        th {
+            height: 20px;
+            background-color: #5f5f5f;
+            color: white;
+            border: 1px solid black;
+        }
+
+        th:first-child {
+            background-color: white;
+            border: none;
+        }
+        
+        td {
+            width: 120px;
+            height: 60px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #bac0be;
+
+        }
+
+        td:first-child {
+            width: 20px;
+            background-color: white;
+            border: none;
+        }
+
+        .pnl-table td:last-child {
+            width: 20px;
+            background-color: white;
+            border: none;
+        }
+
+        .pnl-table  th:last-child {
+            background-color: white;
+            border: none;
+        }
+
+        .populated-cell {
+           border: 1px solid;
+           border-color: black;
+           background-color: #838383;
+        }
+
+        .info-panel>p {
+            margin: 0px;
+        }
+
+        .info-panel>p[id] {
+            font-weight: bold;
+        }
+
+        p#TAG {
+            color: white;
+        }
+
+        p#TAG + p {
+            text-align: center;
+            font-weight: bold;
+            font-size: 300%;
+        }
+
+        p#Description {
+            font-weight: bold;
+            padding-top: 25px;
+        }
+
+        p#Description + p {
+            padding-bottom: 25px;
+        }
+
+        p#Description {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="csv-input" accept=".csv" />
+    <select id="panel-select"></select>
+    <div id="tables-container"></div>
+
+    <div id="info-panel" class="info-panel"></div>
+
+    <script>
+        let panelsData = {};
+        let entriesData = [];
+
+        document.getElementById('csv-input').addEventListener('change', handleFileSelect, false);
+        document.getElementById('panel-select').addEventListener('change', handlePanelSelect, false);
+
+        // Add event listener for populated cells
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('populated-cell')) {
+                const infoPanel = document.getElementById('info-panel');
+                const cellData = event.target.dataset.entry;
+                const entry = JSON.parse(cellData);
+                let infoContent = '';
+
+                // infoContent += `<ul>`;
+                // for (const [key, value] of Object.entries(entry)) {
+                //     if (value) {
+                //         infoContent += `<li id=${key}>${key}: </li>  ${value}<br><br>`;
+                //     }
+                // }
+                // infoContent += `</ul>`;
+                for (const [key, value] of Object.entries(entry)) {
+                    if (value) {
+                        infoContent += `<p id=${key}>${key}:</p><p>&nbsp;&nbsp;${value}</p><br>`;
+                    }
+                }
+
+
+                infoPanel.innerHTML = infoContent;
+                infoPanel.classList.add('open');
+            }
+        });
+
+        // Add event listener to close the info panel when clicking outside of it
+        document.addEventListener('click', function(event) {
+            const infoPanel = document.getElementById('info-panel');
+            if (!infoPanel.contains(event.target) && !event.target.classList.contains('populated-cell')) {
+                infoPanel.classList.remove('open');
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file.name.endsWith('.csv')) {
+                alert('Please upload a valid CSV file.');
+                return;
+            }
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    processCSVData(results.data);
+                }
+            });
+        }
+
+        function processCSVData(data) {
+            const tablesContainer = document.getElementById('tables-container');
+            panelsData = {};
+            entriesData = [];
+
+            // Separate panel data and entries data
+            data.forEach(row => {
+                if (row.TAG === 'MCC') {
+                    if (!panelsData[row.MCC_PNL]) {
+                        panelsData[row.MCC_PNL] = {
+                            tag: row.TAG,
+                            panelId: row.MCC_PNL,
+                            floor: row.MCC_Floor,
+                            rows: row.MCC_Space,
+                            columns: row.MCC_Section
+                        };
+                    }
+                }
+                else if (row.TAG === 'PNL') {
+                    if (!panelsData[row.MCC_PNL]) {
+                        panelsData[row.MCC_PNL] = {
+                            tag: row.TAG,
+                            panelId: row.MCC_PNL,
+                            floor: row.MCC_Floor,
+                            rows: row.MCC_Space,
+                        };
+                    }
+                } else {
+                    entriesData.push(row);
+                }
+            });
+
+            // Populate the dropdown with panel options
+            const panelSelect = document.getElementById('panel-select');
+            panelSelect.innerHTML = ''; // Clear existing options
+
+            var op = document.createElement("option");
+            op.text = "Select A Panel";
+            panelSelect.add(op);
+            
+            Object.keys(panelsData).forEach(panelId => {
+                const option = document.createElement('option');
+                option.value = panelId;
+                option.text = panelId;
+                panelSelect.appendChild(option);
+            });
+
+            // Check for duplicates in entries data
+            //checkForDuplicates(entriesData);
+        }
+
+        function handlePanelSelect(event) {
+            const selectedPanelId = event.target.value;
+            const panel = panelsData[selectedPanelId];
+            const tablesContainer = document.getElementById('tables-container');
+            tablesContainer.innerHTML = ''; // Clear existing table
+
+            if (panel) {
+                let table;
+                if (panel.tag.startsWith('PNL')) {
+                    table = createPNLTable(panel.panelId, panel.floor, panel.rows);
+                    tablesContainer.appendChild(table);
+                    populatePNLTable(entriesData, panel.panelId);
+                } else if (panel.tag.startsWith('MCC')) {
+                    table = createMCCTable(panel.panelId, panel.floor, panel.rows, panel.columns);
+                    tablesContainer.appendChild(table);
+                    populateMCCTable(entriesData, panel.panelId);
+                }
+                else {
+                    return;
+                }
+            }
+        }
+
+        function createMCCTable(panelId, floor, rows, columns) {
+            const table = document.createElement('table');
+            table.id = `panel-${panelId}`;
+            table.className = 'mcc-table';
+            table.border = '1';
+
+            // Create the panel header row
+            const headerRow = table.insertRow();
+            headerRow.appendChild(document.createElement('th')) // Empty corner cell
+            const headerCell = document.createElement('th');
+            headerCell.colSpan = columns + 1;  // Including the row header column
+            headerCell.innerHTML = `<b>${panelId} - ${floor}</b>`;
+            headerRow.appendChild(headerCell);
+
+            // Create column header row
+            const columnHeaderRow = table.insertRow();
+            columnHeaderRow.appendChild(document.createElement('th')) // Empty corner cell
+            for (let col = 1; col <= columns; col++) {
+                const cell = document.createElement('th');
+                cell.innerHTML = col;
+                columnHeaderRow.appendChild(cell);
+            }
+
+            // Create the rest of the table
+            for (let row = 1; row <= rows; row++) {
+                const tableRow = table.insertRow();
+                const rowHeader = tableRow.insertCell();
+                rowHeader.innerHTML = row;
+                for (let col = 1; col <= columns; col++) {
+                    tableRow.insertCell();
+                }
+            }
+
+            return table;
+        }
+
+        function populateMCCTable(entriesData, panelId) {
+            const table = document.getElementById(`panel-${panelId}`);
+            entriesData.forEach(entry => {
+                if (entry.MCC_PNL === panelId) {
+                    const position = parseInt(entry.MCC_Position);
+                    const spaceSpan = parseInt(entry.MCC_Space);
+                    const section = parseInt(entry.MCC_Section);
+                    const tag = entry.TAG;
+                    const description = entry.Description;
+
+                    const row = table.rows[position + 1];
+                    const cell = row.cells[section];
+                    if (cell) {
+                        cell.rowSpan = spaceSpan;
+                        cell.innerHTML = `<b>${tag}</b><br>${description}`;
+                        cell.dataset.entry = JSON.stringify(entry);
+                        cell.classList.add('populated-cell');
+                    }
+
+                    // Safe removal of cells in subsequent rows that are spanned by this entry
+                    for (let i = 1; i < spaceSpan; i++) {
+                        const spanRow = table.rows[position + 1 + i];
+                        if (spanRow && spanRow.cells.length > section) {
+                            spanRow.cells[section].style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
+        function populatePNLTable(entriesData, panelId) {
+            const table = document.getElementById(`panel-${panelId}`);
+            entriesData.forEach(entry => {
+                if (entry.MCC_PNL === panelId) {
+                    const position = parseInt(entry.MCC_Position);
+                    const spaceSpan = parseInt(entry.MCC_Space);
+                    const tag = entry.TAG;
+                    const description = entry.Description;
+
+                    // Determine the row and column based on the position
+                    const rowIdx = Math.floor((position - 1) / 2) + 1;
+                    const colIdx = (position % 2 === 1) ? 1 : 2;
+
+                    const row = table.rows[rowIdx];
+                    const cell = row.cells[colIdx];
+                    if (cell) {
+                        cell.rowSpan = spaceSpan;
+                        cell.innerHTML = `<b>${tag}</b>`;
+                        cell.dataset.entry = JSON.stringify(entry);
+                        cell.classList.add('populated-cell');
+                    }
+
+                    // Safe removal of cells in subsequent rows that are spanned by this entry
+                    for (let i = 1; i < spaceSpan; i++) {
+                        const spanRow = table.rows[rowIdx + i];
+                        if (spanRow && spanRow.cells.length > colIdx) {
+                            spanRow.cells[colIdx].style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPNLTable(panelId, floor, rows) {
+            rows = rows / 2; // Two columns sum to rows
+            const table = document.createElement('table');
+            table.id = `panel-${panelId}`;
+            table.className = 'pnl-table';
+            table.border = '1';
+
+            // Create the panel header row
+            const headerRow = table.insertRow();
+            headerRow.appendChild(document.createElement('th')) // Empty corner cell
+            const headerCell = document.createElement('th');
+            headerCell.colSpan = 2;  // 2 columns
+            headerCell.innerHTML = `<b>${panelId} - ${floor}</b>`;
+            headerRow.appendChild(headerCell);
+            headerRow.appendChild(document.createElement('th')) // Empty corner cell
+
+            // Create the rest of the table
+            for (let row = 1; row <= rows; row++) {
+                const tableRow = table.insertRow();
+                for (let col = 1; col <= 4; col++) {
+                    const cell = tableRow.insertCell();
+                    if (col === 1) {
+                        cell.innerHTML = row * 2 - 1; // Odd values
+                    } else if (col === 4) {
+                        cell.innerHTML = row * 2; // Even values
+                    }
+                }
+            }
+
+            return table;
+        }
+
+        function checkForDuplicates(entriesData) {
+            const seenTags = new Set();
+            const seenPositions = {};
+            const duplicateMessages = [];
+
+            entriesData.forEach(entry => {
+                // Check for duplicate TAGs
+                if (seenTags.has(entry.TAG)) {
+                    duplicateMessages.push(`Duplicate TAG: ${entry.TAG}`);
+                }
+                seenTags.add(entry.TAG);
+
+                // Check for duplicate MCC_Position and MCC_Section pairs within the same MCC_PNL
+                const panelKey = entry.MCC_PNL;
+                const positionKey = `${entry.MCC_Position}:${entry.MCC_Section}`;
+
+                if (!seenPositions[panelKey]) {
+                    seenPositions[panelKey] = new Set();
+                }
+
+                if (seenPositions[panelKey].has(positionKey)) {
+                    duplicateMessages.push(`Duplicate ${panelKey}: TAG ${entry.TAG} MCC_Position ${entry.MCC_Position} MCC_Section ${entry.MCC_Section}`);
+                }
+                seenPositions[panelKey].add(positionKey);
+            });
+
+            // Display duplicates in alert boxes, 10 at a time
+            for (let i = 0; i < duplicateMessages.length; i += 10) {
+                const messageChunk = duplicateMessages.slice(i, i + 10).join('\n');
+                alert(messageChunk);
+            }
+        }
+    </script>
+</body>
+</html>
