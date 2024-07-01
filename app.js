@@ -44,6 +44,7 @@ function DOM_1_Running() { // Landing Page
 }
 
 function DOM_2_Running() { // Content display
+    const panelSelect = document.getElementById('panel-select');
     if (panelsData && Object.keys(panelsData).length > 0) {
         populateMenu(panelsData);
         handlePanelSelect({ target: { value: panelSelect.value } });
