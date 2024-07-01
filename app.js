@@ -44,8 +44,12 @@ function DOM_1_Running() { // Landing Page
 }
 
 function DOM_2_Running() { // Content display
-    populateMenu();
-    handlePanelSelect({ target: { value: panelSelect.value } });
+    if (panelsData && Object.keys(panelsData).length > 0) {
+        populateMenu();
+        handlePanelSelect({ target: { value: panelSelect.value } });
+    } else {
+        console.error("panelsData is not properly initialized.");
+    }
 
     document.getElementById('panel-select').addEventListener('change', handlePanelSelect, false);
 
@@ -80,7 +84,7 @@ function DOM_2_Running() { // Content display
 
     function handlePanelSelect(event) {
         const selectedPanelId = event.target.value;
-        const panel = panelsData[selectedPanelId];
+        const panel = panelsData ? panelsData[selectedPanelId] : null;
         const tablesContainer = document.getElementById('tables-container');
         tablesContainer.innerHTML = ''; // Clear existing table
 
@@ -139,6 +143,14 @@ function DOM_2_Running() { // Content display
 
     function populateMCCTable(entriesData, panelId) {
         const table = document.getElementById(`panel-${panelId}`);
+        if (!table) {
+            console.error(`Table with id panel-${panelId} not found.`);
+            return;
+        }
+        if (!table) {
+            console.error(`Table with id panel-${panelId} not found.`);
+            return;
+        }
         entriesData.forEach(entry => {
             if (entry.MCC_PNL === panelId) {
                 const position = parseInt(entry.MCC_Position);
