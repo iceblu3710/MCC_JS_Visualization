@@ -23,9 +23,10 @@ function disable_css() {
 }
 
 function DOM_1_Running() { // Landing Page
-    document.getElementById('csv-input').addEventListener('change', handleFileSelect, false);
+    const panelSelect = document.getElementById('panel-select');
+    document.getElementById('csv-input').addEventListener('change', (e) => handleFileSelect(e, panelSelect), false);
 
-    function handleFileSelect(e) {
+    function handleFileSelect(e, panelSelect) {
         currentFile = e.target.files[0];
         let reader = new FileReader();
         handleXLSX(currentFile);
@@ -44,7 +45,7 @@ function DOM_1_Running() { // Landing Page
 
 function DOM_2_Running() { // Content display
     populateMenu();
-    handlePanelSelect(target.value = panelSelect);
+    handlePanelSelect({ target: { value: panelSelect.value } });
 
     document.getElementById('panel-select').addEventListener('change', handlePanelSelect, false);
 
