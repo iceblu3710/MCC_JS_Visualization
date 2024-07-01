@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic HTML Page</title>
 </head>
-<body>
-    <div id="greeting"></div>
+<body id="workspace">
+    <div id="abc">abc</div>
     <script>
-        document.getElementById('greeting').innerHTML = 'Hello';
+        alert("abc");
     </script>
 </body>
 </html>
+<script>
+    document.getElementById('workspace').innerHTML = '<div id="greeting"></div>';
+    document.getElementById('greeting').innerHTML = 'greeting';
+    alert("greeting");
+    document.getElementById('workspace').innerHTML = '<div id="info"></div>';
+    document.getElementById('info').innerHTML = 'info';
+    alert("info");
+</script>
