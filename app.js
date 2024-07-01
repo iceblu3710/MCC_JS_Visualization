@@ -45,7 +45,7 @@ function DOM_1_Running() { // Landing Page
 
 function DOM_2_Running() { // Content display
     if (panelsData && Object.keys(panelsData).length > 0) {
-        populateMenu();
+        populateMenu(panelsData);
         handlePanelSelect({ target: { value: panelSelect.value } });
     } else {
         console.error("panelsData is not properly initialized.");
