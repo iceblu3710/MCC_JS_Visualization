@@ -27,10 +27,10 @@ function DOM_1_Running() { // Landing Page
     const panelSelect = document.getElementById('panel-select');
     document.getElementById('csv-input').addEventListener('change', handleFileSelect, false);
 
-    function handleFileSelect(e) {
+    async function handleFileSelect(e) {
         currentFile = e.target.files[0];
         let reader = new FileReader();
-        handleXLSX(currentFile);
+        await handleXLSX(currentFile);
         displayFileInfo(currentFile);
         populateMenu(panelsData);
     }
@@ -326,43 +326,48 @@ function populateMenu(panels) {
 }
 
 
-function handleXLSX(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        let data = e.target.result;
-        const readtype = {type: 'array', dense: true, WTF: 1 };
-        data = e.target.result;
+async function handleXLSX(file) {
+    return new Promise((resolve, reject) => {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            let data = e.target.result;
+            const readtype = {type: 'array', dense: true, WTF: 1 };
+            data = e.target.result;
 
-        if(e.target.result.length > 1e6) {
-            if (!confirm('The file is large and may take some time to process. Do you want to continue?')) {
-                return;
+            if(e.target.result.length > 1e6) {
+                if (!confirm('The file is large and may take some time to process. Do you want to continue?')) {
+                    reject('File too large');
+                    return;
+                }
             }
-        }
 
-        try {
-            const wb = XLSX.read(data, readtype);
-            const sheetName = wb.SheetNames[0];
-            const worksheet = wb.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+            try {
+                const wb = XLSX.read(data, readtype);
+                const sheetName = wb.SheetNames[0];
+                const worksheet = wb.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
 
-            // Convert the array of arrays to an array of objects
-            const headers = jsonData[0];
-            const processedData = jsonData.slice(1).map(row => {
-                let obj = {};
-                headers.forEach((header, index) => {
-                    obj[header] = row[index];
+                // Convert the array of arrays to an array of objects
+                const headers = jsonData[0];
+                const processedData = jsonData.slice(1).map(row => {
+                    let obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header] = row[index];
+                    });
+                    return obj;
                 });
-                return obj;
-            });
 
-            processData(processedData);
-        } catch(e) {
-            console.log(e); 
-            alert('Failed to process the file: ' + e.message);
-        }
-    };
+                processData(processedData);
+                resolve();
+            } catch(e) {
+                console.log(e); 
+                alert('Failed to process the file: ' + e.message);
+                reject(e);
+            }
+        };
 
-    reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(file);
+    });
 }
 
 
