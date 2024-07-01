@@ -37,7 +37,7 @@ function DOM_1_Running() { // Landing Page
     document.getElementById('load-button').addEventListener('click', loadSelection, false);
 
     function loadSelection(e) {
-        panelSelection = document.getElementById('panel-select').value;
+        const panelSelection = document.getElementById('panel-select').value;
         load_DOM_2();
         DOM_2_Running();
     }
