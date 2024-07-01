@@ -1,6 +1,7 @@
 let currentFile = null;
 let panelsData = {};
 let entriesData = [];
+let panelSelection = null;
 
 
 function app_init() {
@@ -24,9 +25,9 @@ function disable_css() {
 
 function DOM_1_Running() { // Landing Page
     const panelSelect = document.getElementById('panel-select');
-    document.getElementById('csv-input').addEventListener('change', (e) => handleFileSelect(e, panelSelect), false);
+    document.getElementById('csv-input').addEventListener('change', handleFileSelect, false);
 
-    function handleFileSelect(e, panelSelect) {
+    function handleFileSelect(e) {
         currentFile = e.target.files[0];
         let reader = new FileReader();
         handleXLSX(currentFile);
@@ -37,7 +38,7 @@ function DOM_1_Running() { // Landing Page
     document.getElementById('load-button').addEventListener('click', loadSelection, false);
 
     function loadSelection(e) {
-        const panelSelection = document.getElementById('panel-select').value;
+        panelSelection = document.getElementById('panel-select').value;
         load_DOM_2();
         DOM_2_Running();
     }
@@ -47,7 +48,7 @@ function DOM_2_Running() { // Content display
     const panelSelect = document.getElementById('panel-select');
     if (panelsData && Object.keys(panelsData).length > 0) {
         populateMenu(panelsData);
-        handlePanelSelect({ target: { value: panelSelect.value } });
+        handlePanelSelect({ target: { value: panelSelection } });
     } else {
         console.error("panelsData is not properly initialized.");
     }
@@ -144,14 +145,6 @@ function DOM_2_Running() { // Content display
 
     function populateMCCTable(entriesData, panelId) {
         const table = document.getElementById(`panel-${panelId}`);
-        if (!table) {
-            console.error(`Table with id panel-${panelId} not found.`);
-            return;
-        }
-        if (!table) {
-            console.error(`Table with id panel-${panelId} not found.`);
-            return;
-        }
         entriesData.forEach(entry => {
             if (entry.MCC_PNL === panelId) {
                 const position = parseInt(entry.MCC_Position);
@@ -284,7 +277,6 @@ function checkForDuplicates(entriesData) {
 
 
 function processData(data) {
-    const tablesContainer = document.getElementById('tables-container');
     panelsData = {};
     entriesData = [];
 
@@ -314,24 +306,6 @@ function processData(data) {
             entriesData.push(row);
         }
     });
-
-    // Populate the dropdown with panel options
-    const panelSelect = document.getElementById('panel-select');
-    panelSelect.innerHTML = ''; // Clear existing options
-
-    var op = document.createElement("option");
-    op.text = "Select A Panel";
-    panelSelect.add(op);
-    
-    Object.keys(panelsData).forEach(panelId => {
-        const option = document.createElement('option');
-        option.value = panelId;
-        option.text = panelId;
-        panelSelect.appendChild(option);
-    });
-
-    // Check for duplicates in entries data
-    //checkForDuplicates(entriesData);
 }
 
 
