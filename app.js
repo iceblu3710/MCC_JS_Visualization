@@ -308,7 +308,7 @@ function processData(data) {
 }
 
 
-function populateMenu(panels) {
+function populateMenuX(panels) {
     const panelSelect = document.getElementById('panel-select');
     panelSelect.innerHTML = ''; // Clear existing options
 
@@ -321,6 +321,21 @@ function populateMenu(panels) {
         option.value = panelId;
         option.text = panelId;
         panelSelect.appendChild(option);
+    });
+}
+
+function populateMenu(panels) {
+    const panelSelect = document.getElementById('select');
+    panelSelect.innerHTML = ''; // Clear existing options
+
+    var ul = document.createElement('ul');
+    panelSelect.appendChild(ul);
+    
+    Object.keys(panels).forEach(tag, panelId => {
+        var li = document.createElement('li');
+        li.setAttribute('class', panelId);
+        li.innerText = tag + ' '+ panelId;
+        ul.appendChild(li);
     });
 }
 
