@@ -331,7 +331,7 @@ function populateMenu(panels) {
     var ul = document.createElement('ul');
     panelSelect.appendChild(ul);
     
-    Object.keys(panels).forEach(tag, panelId => {
+    Object.entries(panels).forEach(([panelId, { tag }]) => {
         var li = document.createElement('li');
         li.setAttribute('class', panelId);
         li.innerText = tag + ' '+ panelId;
