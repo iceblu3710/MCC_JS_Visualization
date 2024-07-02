@@ -1,19 +1,17 @@
-#page-div::before {
-    background-image: url("background.jpg");
-    content: ' ';
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     height: 100%;
-    opacity: 0.2;
+    margin: 0;
+}
+
+#workspace {
+    background-image: url("background2.jpg");
+    height: 100%;
     background-repeat: no-repeat;
-    background-position: 50% 0;
     background-size: cover;
 }
 
-#app-name {
+/* #app-name {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -31,8 +29,8 @@
     font-size: 4em;
     color: rgba(0,0,0,0.6);
     text-shadow: 2px 8px 6px rgba(250, 250, 250, 0.5), 0px -5px 35px rgba(250, 250, 250, 0.5), 8px 4px 5px rgba(0, 0, 0, 0.3);
-}
-
+} */
+/* 
 #file-picker {
     display: flex;
     background-color: aquamarine;
@@ -87,8 +85,7 @@
     --select-focus: blue;
     --select-arrow: var(--select-border);
   }
-  
-  /* This is the select HTML element not the id or class */
+
   select {
     appearance: none;
     border: none;
@@ -126,5 +123,63 @@
     font-weight: 500;
   }
   
+   */
   
+
+.container {  
+    height:  800px;
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    grid-template-rows: 200px 60% 20%;
+    gap: 5px 5px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "Header Header Header"
+      "Asset-List File-Info action-buttons"
+      "Footer Footer Footer";
+  }
   
+.Asset-List { 
+    grid-area: Asset-List;
+}
+  
+.File-Info { 
+    grid-area: File-Info;
+}
+  
+.action-buttons {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 33% 33% 33%;
+    gap: 30px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "."
+      "."
+      ".";
+    grid-area: action-buttons;
+  }
+  
+.Footer {
+    grid-area: Footer;
+}
+  
+.Header { 
+    grid-area: Header;
+}
+
+.button { 
+    display: block; 
+    background-color: rgba(160, 160, 160, 0.781); 
+    color: black; 
+    width: 100%; 
+    height: 100%; 
+    font-size: 30px; 
+    border-radius: 40px; 
+    border: none; 
+} 
+
+.button:hover { 
+    background-color: rgb(148, 207, 148); 
+    color: rgb(82, 82, 74); 
+} 

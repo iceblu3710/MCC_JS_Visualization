@@ -25,7 +25,7 @@ function disable_css() {
 
 function DOM_1_Running() { // Landing Page
     const panelSelect = document.getElementById('panel-select');
-    document.getElementById('csv-input').addEventListener('change', handleFileSelect, false);
+    document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
 
     async function handleFileSelect(e) {
         currentFile = e.target.files[0];
