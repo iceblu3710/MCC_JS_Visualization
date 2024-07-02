@@ -325,7 +325,7 @@ function populateMenuX(panels) {
 }
 
 function populateMenu(panels) {
-    const panelSelect = document.getElementById('select');
+    const panelSelect = document.getElementById('sections');
     panelSelect.innerHTML = ''; // Clear existing options
 
     var ul = document.createElement('ul');

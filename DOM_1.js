@@ -1,9 +1,7 @@
 const DOM_1 = `
     <div class="container">
         <div class="Asset-List">
-            <div id="select">
-                <select id="panel-select"></select>
-                <span class="focus"></span>
+            <div id="sections">
             </div>
         </div>
         <div class="File-Info">
@@ -11,13 +9,14 @@ const DOM_1 = `
         </div>
         <div class="action-buttons">
             <div>
-                <input type="file" id="file-input" class="button" accept=".xlsx">
+                <input type="file" id="file-input" accept=".xlsx" hidden/>
+                <label for="file-input" class="button">LOAD FILE</label>
             </div>
             <div>
-                <button id="load-button"class="button" >LOAD ITEM</button>
+                <label id="load-button" class="button">LOAD ITEM</label>
             </div>
             <div>
-                <button id="exit-button"class="button" >CLOSE APP</button>
+                <label id="exit-button" class="button">CLOSE APP</label>
             </div>
         </div>
         <div class="Footer"></div>
