@@ -74,6 +74,14 @@ function DOM_2_Running() { // Content display
             infoPanel.innerHTML = infoContent;
             infoPanel.classList.add('open');
         }
+        li.addEventListener('click', function() {
+            // Remove 'active' class from all li elements
+            document.querySelectorAll('#sections li').forEach(item => {
+                item.classList.remove('active');
+            });
+            // Add 'active' class to the clicked li element
+            li.classList.add('active');
+        });
     });
 
     // Add event listener to close the info panel when clicking outside of it
