@@ -217,7 +217,7 @@ li {
     margin-top: 10px; 
 } 
 
-li:hover { 
+li:hover, li:active { 
     background-color: rgb(148, 207, 148); 
     color: rgb(82, 82, 74); 
 } 
