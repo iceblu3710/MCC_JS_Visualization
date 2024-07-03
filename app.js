@@ -24,37 +24,41 @@ function disable_css() {
 }
 
 function DOM_1_Running() { // Landing Page
-    const panelSelect = document.getElementById('panel-select');
     document.getElementById('file-input').addEventListener('change', handleFileSelect, false);
 
     async function handleFileSelect(e) {
         currentFile = e.target.files[0];
-        let reader = new FileReader();
+        if (currentFile.type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            alert("This is not an Excel .xlsx file!");
+            return;
+        }
         await handleXLSX(currentFile);
         displayFileInfo(currentFile);
         populateMenu(panelsData);
         checkForDuplicates(entriesData);
     }
 
-    document.getElementById('load-button').addEventListener('click', loadSelection, false);
 
+    document.getElementById('load-button').addEventListener('click', loadSelection, false);
     function loadSelection(e) {
-        panelSelection = document.getElementById('panel-select').value;
         load_DOM_2();
         DOM_2_Running();
+    }
+
+    if (currentFile) {
+        displayFileInfo(currentFile);
+        populateMenu(panelsData);
     }
 }
 
 function DOM_2_Running() { // Content display
-    const panelSelect = document.getElementById('panel-select');
-    if (panelsData && Object.keys(panelsData).length > 0) {
-        populateMenu(panelsData);
-        handlePanelSelect({ target: { value: panelSelection } });
-    } else {
-        console.error("panelsData is not properly initialized.");
-    }
+    handlePanelSelect({ target: { value: panelSelection } });
 
-    document.getElementById('panel-select').addEventListener('change', handlePanelSelect, false);
+    document.getElementById('home-button').addEventListener('click', goHome, false);
+    function goHome(e) {
+        load_DOM_1();
+        DOM_1_Running();
+    }
 
     // Add event listener for populated cells
     document.addEventListener('click', function(event) {
@@ -74,14 +78,6 @@ function DOM_2_Running() { // Content display
             infoPanel.innerHTML = infoContent;
             infoPanel.classList.add('open');
         }
-        li.addEventListener('click', function() {
-            // Remove 'active' class from all li elements
-            document.querySelectorAll('#sections li').forEach(item => {
-                item.classList.remove('active');
-            });
-            // Add 'active' class to the clicked li element
-            li.classList.add('active');
-        });
     });
 
     // Add event listener to close the info panel when clicking outside of it
@@ -118,7 +114,7 @@ function DOM_2_Running() { // Content display
 
     function createMCCTable(panelId, floor, rows, columns) {
         const table = document.createElement('table');
-        table.id = `panel-${panelId}`;
+        table.id = `MCC ${panelId}`;
         table.className = 'mcc-table';
         table.border = '1';
 
@@ -127,7 +123,7 @@ function DOM_2_Running() { // Content display
         headerRow.appendChild(document.createElement('th')) // Empty corner cell
         const headerCell = document.createElement('th');
         headerCell.colSpan = columns + 1;  // Including the row header column
-        headerCell.innerHTML = `<b>${panelId} - ${floor}</b>`;
+        headerCell.innerHTML = `<b>MCC ${panelId} - ${floor}</b>`;
         headerRow.appendChild(headerCell);
 
         // Create column header row
@@ -153,7 +149,7 @@ function DOM_2_Running() { // Content display
     }
 
     function populateMCCTable(entriesData, panelId) {
-        const table = document.getElementById(`panel-${panelId}`);
+        const table = document.getElementsByClassName("mcc-table")[0];
         entriesData.forEach(entry => {
             if (entry.MCC_PNL === panelId) {
                 const position = parseInt(entry.MCC_Position);
@@ -332,6 +328,16 @@ function populateMenuX(panels) {
     });
 }
 
+function set_li_active(e) {
+    // Remove 'active' class from all li elements
+    document.querySelectorAll('#sections li').forEach(item => {
+        item.classList.remove('active');
+    });
+    // Add 'active' class to the clicked li element
+    panelSelection = e.target.className;
+    e.target.classList.add('active');
+}
+
 function populateMenu(panels) {
     const panelSelect = document.getElementById('sections');
     panelSelect.innerHTML = ''; // Clear existing options
@@ -344,6 +350,7 @@ function populateMenu(panels) {
         li.setAttribute('class', panelId);
         li.innerText = tag + ' '+ panelId;
         ul.appendChild(li);
+        li.addEventListener('click', set_li_active, false);
     });
 }
 
@@ -354,7 +361,6 @@ async function handleXLSX(file) {
         reader.onload = function(e) {
             let data = e.target.result;
             const readtype = {type: 'array', dense: true, WTF: 1 };
-            data = e.target.result;
 
             if(e.target.result.length > 1e6) {
                 if (!confirm('The file is large and may take some time to process. Do you want to continue?')) {

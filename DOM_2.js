@@ -1,5 +1,5 @@
 const DOM_2 = `
-    <select id="panel-select"></select>
+    <div id="home-button">GO BACK HOME</div>
     <div id="tables-container"></div>
     <div id="info-panel" class="info-panel"></div>
 `;

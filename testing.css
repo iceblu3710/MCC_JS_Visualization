@@ -1,3 +1,17 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    height: 100%;
+    margin: 0;
+}
+
+#workspace {
+    background-image: url("background2.jpg");
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: inline-flex;
+}
+
 .populated-cell {
     border: 1px solid;
     border-color: black;
@@ -104,4 +118,23 @@ p#Description + p {
 
 p#Description {
     font-weight: bold;
+}
+
+#home-button {
+    width: 40px;
+    display: block;
+    margin: 10px 10px 10px 10px;
+    height: 800px;
+    border: 2px solid;
+    background-color: grey;
+    text-align: center;
+    align-content: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#tables-container {
+    margin: 10px 0px 0px 0px;
 }

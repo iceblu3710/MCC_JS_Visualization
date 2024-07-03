@@ -33,24 +33,3 @@ function load_DOM_1(){
     document.getElementById('workspace').innerHTML = DOM_1;
     document.getElementById("DOM_1_CSS").disabled = false;
 }
-
-
-        // <div class="container">
-        //     <div class="box">
-        //         <div class="box-row">
-        //             <div id="file-picker">
-        //                 <input type="file" id="file-input" accept=".xlsx">
-        //             </div>
-        //             <div id="file-info" class="box1"></div>
-        //             <div id="panel-list" class="box2">
-        //                 <label>Assets Avalible</label>
-        //                 <br>
-        //                 <div id="select">
-        //                     <select id="panel-select"></select>
-        //                     <span class="focus"></span>
-        //                 </div>
-        //             </div>
-        //             
-        //         </div>
-        //     </div>
-        // </div>
